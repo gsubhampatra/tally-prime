@@ -10,8 +10,8 @@ export const VoucherItemSchema = z.object({
 
 export const VoucherSchema = z.object({
   type: z.nativeEnum(VoucherType),
-  date: z.coerce.date(),
-  ledgerId: z.string(),
+  date: z.union([z.date(), z.string().pipe(z.coerce.date())]),
+  ledgerId: z.string().min(1, "Ledger is required"),
   offsetLedgerId: z.string().optional(), // Used for Cash/Bank in Receipt/Payment or Revenue/Expense
   totalAmount: z.number().positive(),
   note: z.string().optional(),

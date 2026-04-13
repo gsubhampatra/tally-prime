@@ -29,7 +29,7 @@ export default function VoucherForm({ type, ledgers, offsetLedgers, items = [] }
   const isTrade = type === "SALE" || type === "PURCHASE";
 
   const form = useForm<VoucherInput>({
-    resolver: zodResolver(VoucherSchema),
+    resolver: zodResolver(VoucherSchema) as any,
     defaultValues: {
       type,
       date: new Date(),
