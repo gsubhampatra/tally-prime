@@ -146,6 +146,9 @@ export class VoucherService {
       }
 
       return voucher;
+    }, {
+      maxWait: 10000,  // Max time to acquire a connection (10s for Neon cold starts)
+      timeout: 15000,  // Max time for the transaction to complete
     });
   }
 }
