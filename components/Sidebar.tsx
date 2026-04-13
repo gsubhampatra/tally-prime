@@ -39,14 +39,14 @@ export default function Sidebar() {
           if ("href" in item) {
             const isActive = pathname === item.href;
             return (
-              <Link
-                key={i}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-                }`}
-              >
+                <Link
+                  key={i}
+                  href={(item as { href: string }).href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                  }`}
+                >
                 <span>{item.icon}</span>
                 {item.label}
               </Link>
