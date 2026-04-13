@@ -1,0 +1,136 @@
+// ==============================
+// GENERATOR & DATASOURCE
+// ==============================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==============================
+// ENUMS
+// ==============================
+
+enum LedgerType {
+  CUSTOMER
+  SUPPLIER
+  CASH
+  BANK
+}
+
+enum VoucherType {
+  SALE
+  PURCHASE
+  PAYMENT
+  RECEIPT
+}
+
+enum StockMoveType {
+  IN
+  OUT
+}
+
+// ==============================
+// MASTER TABLES
+// ==============================
+
+model Ledger {
+  id        String     @id @default(cuid())
+  name      String
+  type      LedgerType
+  phone     String?
+  createdAt DateTime   @default(now())
+
+  entries  LedgerEntry[]
+  vouchers Voucher[]
+
+  @@index([type])
+}
+
+model Item {
+  id           String  @id @default(cuid())
+  name         String
+  category     String?
+  unit         String
+  sellingPrice Float
+  basePrice    Float
+
+  createdAt DateTime @default(now())
+
+  stockMoves   StockMove[]
+  voucherItems VoucherItem[]
+}
+
+// ==============================
+// CORE LOGIC TABLES
+// ==============================
+
+model LedgerEntry {
+  id       String   @id @default(cuid())
+  ledgerId String
+  date     DateTime
+
+  debit  Float @default(0)
+  credit Float @default(0)
+
+  refType VoucherType
+  refId   String
+
+  createdAt DateTime @default(now())
+
+  ledger Ledger @relation(fields: [ledgerId], references: [id])
+
+  @@index([ledgerId, date])
+}
+
+model StockMove {
+  id     String @id @default(cuid())
+  itemId String
+
+  quantity Float
+  type     StockMoveType
+
+  refType VoucherType
+  refId   String
+
+  createdAt DateTime @default(now())
+
+  item Item @relation(fields: [itemId], references: [id])
+
+  @@index([itemId])
+}
+
+// ==============================
+// TRANSACTIONS
+// ==============================
+
+model Voucher {
+  id   String      @id @default(cuid())
+  type VoucherType
+  date DateTime
+
+  ledgerId    String // main party
+  totalAmount Float
+  note        String?
+
+  createdAt DateTime @default(now())
+
+  ledger Ledger        @relation(fields: [ledgerId], references: [id])
+  items  VoucherItem[]
+}
+
+model VoucherItem {
+  id        String @id @default(cuid())
+  voucherId String
+  itemId    String
+
+  quantity Float
+  price    Float
+  total    Float
+
+  voucher Voucher @relation(fields: [voucherId], references: [id])
+  item    Item    @relation(fields: [itemId], references: [id])
+}
