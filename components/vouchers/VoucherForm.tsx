@@ -17,27 +17,43 @@ type VoucherFormProps = {
   ledgers: { id: string; name: string }[];
   offsetLedgers?: { id: string; name: string }[];
   items?: { id: string; name: string; sellingPrice: number; basePrice: number }[];
+  initialValues?: Omit<Partial<VoucherInput>, "date"> & { date?: string | Date };
+  submitAction?: (data: VoucherInput) => Promise<{ success: boolean; error?: string }>;
+  submitLabel?: string;
+  successPath?: string;
 };
 
 const selectClass =
   "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
-export default function VoucherForm({ type, ledgers, offsetLedgers, items = [] }: VoucherFormProps) {
+export default function VoucherForm({
+  type,
+  ledgers,
+  offsetLedgers,
+  items = [],
+  initialValues,
+  submitAction = createVoucherAction,
+  submitLabel,
+  successPath,
+}: VoucherFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isTrade = type === "SALE" || type === "PURCHASE";
+  const today = new Date();
+  const initialDate = initialValues?.date ? new Date(initialValues.date) : today;
 
   const form = useForm<VoucherInput>({
     resolver: zodResolver(VoucherSchema) as any,
     defaultValues: {
       type,
-      date: new Date(),
       ledgerId: "",
       offsetLedgerId: "",
       totalAmount: 0,
       items: [],
       note: "",
+      ...initialValues,
+      date: initialDate,
     },
   });
 
@@ -53,10 +69,10 @@ export default function VoucherForm({ type, ledgers, offsetLedgers, items = [] }
   const onSubmit = async (data: VoucherInput) => {
     setIsSubmitting(true);
     try {
-      const res = await createVoucherAction(data);
+      const res = await submitAction(data);
       if (res.success) {
-        alert("Voucher Created Successfully!");
-        router.push("/vouchers/" + type.toLowerCase());
+        alert(submitLabel ? `${submitLabel} Successfully!` : "Voucher Created Successfully!");
+        router.push(successPath || "/vouchers/" + type.toLowerCase());
       } else {
         alert("Error: " + res.error);
       }
@@ -199,7 +215,7 @@ export default function VoucherForm({ type, ledgers, offsetLedgers, items = [] }
           </div>
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Creating..." : "Save Voucher"}
+            {isSubmitting ? "Saving..." : submitLabel || "Save Voucher"}
           </Button>
         </form>
       </CardContent>

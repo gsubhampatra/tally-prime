@@ -1,5 +1,6 @@
 import { getDashboardStatsAction } from "@/server/actions/dashboard.actions";
 import Link from "next/link";
+import DatabaseMaintenance from "@/components/admin/DatabaseMaintenance";
 
 export default async function DashboardPage() {
   const stats = await getDashboardStatsAction();
@@ -37,13 +38,15 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="relative overflow-hidden rounded-xl border bg-card p-5 shadow-sm">
-            <div className={`absolute inset-0 opacity-[0.03] bg-gradient-to-br ${kpi.color}`} />
+            <div className={`absolute inset-0 opacity-[0.03] bg-linear-to-br ${kpi.color}`} />
             <p className="text-sm font-medium text-muted-foreground">{kpi.label}</p>
             <p className="mt-2 text-2xl font-bold tracking-tight">{kpi.value}</p>
             <p className="mt-1 text-xs text-muted-foreground">{kpi.sub}</p>
           </div>
         ))}
       </div>
+
+      <DatabaseMaintenance />
 
       {/* Recent Vouchers */}
       <div className="rounded-xl border bg-card shadow-sm">

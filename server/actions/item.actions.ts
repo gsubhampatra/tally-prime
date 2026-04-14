@@ -24,8 +24,26 @@ export async function createItemAction(data: ItemInput) {
   }
 }
 
+export async function updateItemAction(itemId: string, data: ItemInput) {
+  try {
+    const parsed = ItemSchema.parse(data);
+    const item = await db.item.update({
+      where: { id: itemId },
+      data: parsed,
+    });
+    return { success: true, data: item };
+  } catch (error: any) {
+    console.error("Item Update Error:", error);
+    return { success: false, error: error.message || "Failed to update item" };
+  }
+}
+
 export async function getItemsAction() {
   return db.item.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function getItemAction(itemId: string) {
+  return db.item.findUnique({ where: { id: itemId } });
 }
 
 export async function getItemWithStockAction(itemId: string) {

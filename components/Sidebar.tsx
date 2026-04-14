@@ -31,6 +31,8 @@ const navItems = [
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const brandName = "Patra Bhandar";
+  const brandSubtext = "Subham Traders";
 
   const navContent = (
     <>
@@ -78,7 +80,8 @@ export default function Sidebar() {
         })}
       </nav>
       <div className="border-t p-4">
-        <p className="text-xs text-muted-foreground text-center">Tally Prime v1.0</p>
+        <p className="text-sm font-semibold text-center text-foreground">{brandName}</p>
+        <p className="text-xs text-muted-foreground text-center">{brandSubtext}</p>
       </div>
     </>
   );
@@ -105,9 +108,10 @@ export default function Sidebar() {
             )}
           </svg>
         </button>
-        <h1 className="text-base font-bold tracking-tight">
-          <span className="text-primary">Tally</span> Prime
-        </h1>
+        <div className="text-center leading-tight">
+          <h1 className="text-base font-bold tracking-tight">{brandName}</h1>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em]">{brandSubtext}</p>
+        </div>
         <div className="w-9" /> {/* Spacer to center the title */}
       </div>
 
@@ -131,9 +135,10 @@ export default function Sidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 border-r bg-card flex-col shrink-0">
         <div className="h-16 flex items-center px-6 border-b">
-          <h1 className="text-lg font-bold tracking-tight">
-            <span className="text-primary">Tally</span> Prime
-          </h1>
+          <div className="leading-tight">
+            <h1 className="text-lg font-bold tracking-tight">{brandName}</h1>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-[0.25em]">{brandSubtext}</p>
+          </div>
         </div>
         {navContent}
       </aside>

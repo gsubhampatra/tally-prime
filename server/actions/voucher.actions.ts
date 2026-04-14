@@ -25,3 +25,22 @@ export async function createVoucherAction(data: VoucherInput) {
     };
   }
 }
+
+export async function updatePurchaseVoucherAction(voucherId: string, data: VoucherInput) {
+  try {
+    const parsed = VoucherSchema.parse(data);
+
+    const voucher = await VoucherService.updatePurchaseVoucher(voucherId, {
+      ...parsed,
+      date: new Date(parsed.date),
+    });
+
+    return { success: true, data: voucher };
+  } catch (error: any) {
+    console.error("Purchase Voucher Update Error:", error);
+    return {
+      success: false,
+      error: error.message || "Failed to update purchase voucher",
+    };
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -131,6 +132,7 @@ export default function PurchaseTable({ vouchers, initialFrom, initialTo }: Prop
                     <th className="px-6 py-3 text-left font-medium">Items</th>
                     <th className="px-6 py-3 text-left font-medium">Note</th>
                     <th className="px-6 py-3 text-right font-medium">Amount</th>
+                    <th className="px-6 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
                 {vouchers.map((v) => {
@@ -149,10 +151,15 @@ export default function PurchaseTable({ vouchers, initialFrom, initialTo }: Prop
                         <td className="px-6 py-3 text-muted-foreground">{v.items.length} item{v.items.length !== 1 ? "s" : ""}</td>
                         <td className="px-6 py-3 text-muted-foreground">{v.note || "—"}</td>
                         <td className="px-6 py-3 text-right font-semibold">₹{v.totalAmount.toLocaleString("en-IN")}</td>
+                        <td className="px-6 py-3 text-right">
+                          <Link href={`/vouchers/purchase/${v.id}/edit`} className="text-primary hover:underline text-sm font-medium" onClick={(e) => e.stopPropagation()}>
+                            Edit
+                          </Link>
+                        </td>
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={6} className="bg-muted/30 px-0 py-0">
+                          <td colSpan={7} className="bg-muted/30 px-0 py-0">
                             <div className="px-12 py-4">
                               <table className="w-full text-sm">
                                 <thead>
@@ -240,7 +247,12 @@ export default function PurchaseTable({ vouchers, initialFrom, initialTo }: Prop
                       ))}
                       <div className="px-4 py-3 flex items-center justify-between font-semibold bg-muted/30">
                         <span className="text-sm">Total</span>
-                        <span>₹{v.totalAmount.toLocaleString("en-IN")}</span>
+                        <div className="flex items-center gap-3">
+                          <span>₹{v.totalAmount.toLocaleString("en-IN")}</span>
+                          <Link href={`/vouchers/purchase/${v.id}/edit`} className="text-xs font-medium text-primary hover:underline">
+                            Edit
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   )}

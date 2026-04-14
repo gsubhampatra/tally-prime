@@ -75,6 +75,10 @@ export default async function LedgersPage() {
                         <Link href={`/ledger/${ledger.id}`} className="text-primary hover:underline text-sm font-medium">
                           View
                         </Link>
+                        <span className="mx-2 text-muted-foreground">•</span>
+                        <Link href={`/ledger/${ledger.id}/edit`} className="text-primary hover:underline text-sm font-medium">
+                          Edit
+                        </Link>
                       </td>
                     </tr>
                   );

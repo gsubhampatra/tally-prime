@@ -151,4 +151,91 @@ export class VoucherService {
       timeout: 15000,  // Max time for the transaction to complete
     });
   }
+
+  static async updatePurchaseVoucher(voucherId: string, data: VoucherInput) {
+    if (data.type !== "PURCHASE") {
+      throw new Error("Only purchase vouchers can be updated with this flow.");
+    }
+
+    return db.$transaction(async (tx) => {
+      const existingVoucher = await tx.voucher.findUnique({
+        where: { id: voucherId },
+        include: { items: true },
+      });
+
+      if (!existingVoucher) {
+        throw new Error("Purchase voucher not found.");
+      }
+
+      await tx.voucherItem.deleteMany({ where: { voucherId } });
+      await tx.stockMove.deleteMany({ where: { refId: voucherId, refType: existingVoucher.type } });
+      await tx.ledgerEntry.deleteMany({ where: { refId: voucherId, refType: existingVoucher.type } });
+
+      const voucher = await tx.voucher.update({
+        where: { id: voucherId },
+        data: {
+          type: data.type,
+          date: data.date,
+          ledgerId: data.ledgerId,
+          totalAmount: data.totalAmount,
+          note: data.note,
+          items: {
+            create: data.items?.map((item) => ({
+              itemId: item.itemId,
+              quantity: item.quantity,
+              price: item.price,
+              total: item.total,
+            })),
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      if (data.items && data.items.length > 0) {
+        const stockMoveType = "IN";
+        await tx.stockMove.createMany({
+          data: data.items.map((item) => ({
+            itemId: item.itemId,
+            quantity: item.quantity,
+            type: stockMoveType,
+            refType: voucher.type,
+            refId: voucher.id,
+          })),
+        });
+      }
+
+      const ledgerEntries = [
+        {
+          ledgerId: data.ledgerId,
+          date: data.date,
+          debit: 0,
+          credit: data.totalAmount,
+          refType: voucher.type,
+          refId: voucher.id,
+        },
+      ];
+
+      if (data.offsetLedgerId) {
+        ledgerEntries.push({
+          ledgerId: data.offsetLedgerId,
+          date: data.date,
+          debit: data.totalAmount,
+          credit: 0,
+          refType: voucher.type,
+          refId: voucher.id,
+        });
+      }
+
+      await tx.ledgerEntry.createMany({
+        data: ledgerEntries,
+      });
+
+      return voucher;
+    }, {
+      maxWait: 10000,
+      timeout: 15000,
+    });
+  }
 }

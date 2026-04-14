@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 
 export default async function ItemsPage() {
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
+  type ItemRow = (typeof items)[number];
 
   // Get derived stock for each item
   const stockMoves = await db.stockMove.groupBy({
@@ -45,17 +46,18 @@ export default async function ItemsPage() {
                 <th className="px-6 py-3 text-right font-medium">Base Price</th>
                 <th className="px-6 py-3 text-right font-medium">Selling Price</th>
                 <th className="px-6 py-3 text-right font-medium">Stock</th>
+                <th className="px-6 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                     No items yet. Add your first inventory item.
                   </td>
                 </tr>
               ) : (
-                items.map((item) => {
+                items.map((item: ItemRow) => {
                   const stock = stockMap.get(item.id) || 0;
                   return (
                     <tr key={item.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
@@ -72,6 +74,11 @@ export default async function ItemsPage() {
                         }`}>
                           {stock} {item.unit}
                         </span>
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <Link href={`/inventory/items/${item.id}/edit`} className="text-primary hover:underline text-sm font-medium">
+                          Edit
+                        </Link>
                       </td>
                     </tr>
                   );

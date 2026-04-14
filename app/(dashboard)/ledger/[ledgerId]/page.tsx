@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 export default async function LedgerDetailPage({ params }: { params: Promise<{ ledgerId: string }> }) {
   const { ledgerId } = await params;
@@ -13,24 +14,31 @@ export default async function LedgerDetailPage({ params }: { params: Promise<{ l
 
   if (!ledger) return notFound();
 
+  type LedgerEntryRow = (typeof ledger.entries)[number];
+
   // Calculate running balance
   let runningBalance = 0;
-  const entriesWithBalance = [...ledger.entries].reverse().map((entry) => {
+  const entriesWithBalance = [...ledger.entries].reverse().map((entry: LedgerEntryRow) => {
     runningBalance += entry.debit - entry.credit;
     return { ...entry, runningBalance };
   }).reverse();
 
-  const totalDebit = ledger.entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = ledger.entries.reduce((s, e) => s + e.credit, 0);
+  const totalDebit = ledger.entries.reduce((s: number, e: LedgerEntryRow) => s + e.debit, 0);
+  const totalCredit = ledger.entries.reduce((s: number, e: LedgerEntryRow) => s + e.credit, 0);
   const closingBalance = totalDebit - totalCredit;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{ledger.name}</h1>
-        <p className="text-muted-foreground mt-1">
-          {ledger.type} Ledger • {ledger.phone || "No phone"}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{ledger.name}</h1>
+          <p className="text-muted-foreground mt-1">
+            {ledger.type} Ledger • {ledger.phone || "No phone"}
+          </p>
+        </div>
+        <Link href={`/ledger/${ledger.id}/edit`} className="text-primary hover:underline text-sm font-medium pt-2">
+          Edit Ledger
+        </Link>
       </div>
 
       {/* Summary Cards */}
