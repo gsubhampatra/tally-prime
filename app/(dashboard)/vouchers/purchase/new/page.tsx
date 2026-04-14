@@ -1,4 +1,4 @@
-import VoucherForm from "@/components/vouchers/VoucherForm";
+import PurchaseVoucherForm from "@/components/vouchers/PurchaseVoucherForm";
 import { db } from "@/lib/db";
 
 export default async function NewPurchaseVoucherPage() {
@@ -8,16 +8,12 @@ export default async function NewPurchaseVoucherPage() {
   });
 
   const items = await db.item.findMany({
-    select: { id: true, name: true, sellingPrice: true, basePrice: true },
+    select: { id: true, name: true, unit: true, sellingPrice: true, basePrice: true },
   });
 
   return (
     <div className="space-y-6">
-      <VoucherForm
-        type="PURCHASE"
-        ledgers={ledgers}
-        items={items}
-      />
+      <PurchaseVoucherForm ledgers={ledgers} items={items} />
     </div>
   );
 }

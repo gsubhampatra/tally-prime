@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import VoucherForm from "@/components/vouchers/VoucherForm";
+import PurchaseVoucherForm from "@/components/vouchers/PurchaseVoucherForm";
 import { db } from "@/lib/db";
 import { updatePurchaseVoucherAction } from "@/server/actions/voucher.actions";
 
@@ -12,7 +12,7 @@ export default async function EditPurchaseVoucherPage({ params }: { params: Prom
       ledger: { select: { id: true, name: true } },
       items: {
         include: {
-          item: { select: { id: true, name: true, sellingPrice: true, basePrice: true } },
+          item: { select: { id: true, name: true, unit: true, sellingPrice: true, basePrice: true } },
         },
       },
     },
@@ -26,13 +26,12 @@ export default async function EditPurchaseVoucherPage({ params }: { params: Prom
   });
 
   const items = await db.item.findMany({
-    select: { id: true, name: true, sellingPrice: true, basePrice: true },
+    select: { id: true, name: true, unit: true, sellingPrice: true, basePrice: true },
   });
 
   return (
     <div className="space-y-6">
-      <VoucherForm
-        type="PURCHASE"
+      <PurchaseVoucherForm
         ledgers={ledgers}
         items={items}
         initialValues={{

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import LedgerActions from "@/components/ledgers/LedgerActions";
 
 export default async function LedgersPage() {
   const ledgers = await db.ledger.findMany({ orderBy: { name: "asc" } });
@@ -75,10 +76,7 @@ export default async function LedgersPage() {
                         <Link href={`/ledger/${ledger.id}`} className="text-primary hover:underline text-sm font-medium">
                           View
                         </Link>
-                        <span className="mx-2 text-muted-foreground">•</span>
-                        <Link href={`/ledger/${ledger.id}/edit`} className="text-primary hover:underline text-sm font-medium">
-                          Edit
-                        </Link>
+                        <LedgerActions ledgerId={ledger.id} />
                       </td>
                     </tr>
                   );

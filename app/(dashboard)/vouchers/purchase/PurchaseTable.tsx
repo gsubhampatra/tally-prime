@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import PurchaseVoucherActions from "@/components/vouchers/PurchaseVoucherActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -152,9 +152,9 @@ export default function PurchaseTable({ vouchers, initialFrom, initialTo }: Prop
                         <td className="px-6 py-3 text-muted-foreground">{v.note || "—"}</td>
                         <td className="px-6 py-3 text-right font-semibold">₹{v.totalAmount.toLocaleString("en-IN")}</td>
                         <td className="px-6 py-3 text-right">
-                          <Link href={`/vouchers/purchase/${v.id}/edit`} className="text-primary hover:underline text-sm font-medium" onClick={(e) => e.stopPropagation()}>
-                            Edit
-                          </Link>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <PurchaseVoucherActions voucherId={v.id} />
+                          </div>
                         </td>
                       </tr>
                       {isExpanded && (
@@ -249,9 +249,7 @@ export default function PurchaseTable({ vouchers, initialFrom, initialTo }: Prop
                         <span className="text-sm">Total</span>
                         <div className="flex items-center gap-3">
                           <span>₹{v.totalAmount.toLocaleString("en-IN")}</span>
-                          <Link href={`/vouchers/purchase/${v.id}/edit`} className="text-xs font-medium text-primary hover:underline">
-                            Edit
-                          </Link>
+                          <PurchaseVoucherActions voucherId={v.id} />
                         </div>
                       </div>
                     </div>

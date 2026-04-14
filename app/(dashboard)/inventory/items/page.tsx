@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import ItemActions from "@/components/items/ItemActions";
 
 export default async function ItemsPage() {
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
@@ -76,9 +77,7 @@ export default async function ItemsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-3 text-right">
-                        <Link href={`/inventory/items/${item.id}/edit`} className="text-primary hover:underline text-sm font-medium">
-                          Edit
-                        </Link>
+                        <ItemActions itemId={item.id} />
                       </td>
                     </tr>
                   );

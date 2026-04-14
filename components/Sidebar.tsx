@@ -26,6 +26,10 @@ const navItems = [
       { label: "Reports", href: "/reports", icon: "📋" },
     ],
   },
+  {
+    section: "System",
+    items: [{ label: "Database", href: "/database", icon: "🗄️" }],
+  },
 ];
 
 export default function Sidebar() {
